@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: spkn-c2
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PANEL_PASSWORD_HASH
+        sync: false
+      - key: AGENT_AUTH_TOKEN
+        sync: false
+      - key: PYTHON_VERSION
+        value: "3.11.6"
+    plan: free

